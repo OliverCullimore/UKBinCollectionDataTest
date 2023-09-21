@@ -59,8 +59,12 @@ lxml = "*"
 version_toml = ["pyproject.toml:tool.poetry.version"]
 branch = "master"
 commit_message = "Release version {version}"
-prerelease = true
 major_on_zero = true
+build_command = "make install"
+
+[tool.semantic_release.branches.master]
+match = "master"
+prerelease = true
 
 [tool.semantic_release.commit_parser_options]
 allowed_tags = [
