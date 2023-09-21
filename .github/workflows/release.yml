@@ -24,6 +24,11 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Update version
+        uses: commitizen-tools/commitizen-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run image
         uses: abatilo/actions-poetry@v2.3.0
         with:
@@ -34,36 +39,28 @@ jobs:
           python -m pip install --upgrade pip
           pip install wheel twine
 
-      - name: Install
-        run: make install
-
-      - name: Python Semantic Release
-        id: release
-        uses: python-semantic-release/python-semantic-release@v8.1.1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }} # May need to replace with a Personal Access Token if it fails
-
-      - uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ steps.release.outputs.tag }}
-          allowUpdates: true
-          generateReleaseNotes: true
-
       - name: Update manifest.json version
-        if: steps.release.outputs.released
         uses: jossef/action-set-json-field@v2.1
         with:
           file: custom_components/uk_bin_collection/manifest.json
           field: version
-          value: ${{ steps.release.outputs.tag }}
+          value: ${{ env.REVISION }}
 
       - name: Update manifest.json requirements
-        if: steps.release.outputs.released
         uses: jossef/action-set-json-field@v2.1
         with:
           file: custom_components/uk_bin_collection/manifest.json
           field: requirements[0]
-          value: uk-bin-collection>=${{ steps.release.outputs.tag }}
+          value: uk-bin-collection>=${{ env.REVISION }}
+
+      - name: Install
+        run: make install
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ env.REVISION }}
+          generateReleaseNotes: true
 
       - name: Build and publish package
         if: steps.release.outputs.released
