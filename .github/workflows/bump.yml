@@ -37,4 +37,4 @@ jobs:
           tag: ${{ steps.cz.outputs.version }}
           generateReleaseNotes: true
           prerelease: true
-          skipIfReleaseExists: true
+        continue-on-error: true
