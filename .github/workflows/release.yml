@@ -11,8 +11,6 @@ jobs:
     environment: release
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: "${{ secrets.PERSONAL_ACCESS_TOKEN }}"
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -29,17 +27,6 @@ jobs:
 
       - name: Install
         run: make install
-
-      - name: Extract tag name
-        id: tag
-        run: echo ::set-output name=TAG_NAME::$(echo $GITHUB_REF | cut -d / -f 3)
-
-      - name: Create release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ steps.tag.outputs.TAG_NAME }}
-          generateReleaseNotes: true
-          prerelease: true
 
       - name: Build and publish package
         run: |
