@@ -30,3 +30,11 @@ jobs:
         uses: commitizen-tools/commitizen-action@master
         with:
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.cz.outputs.version }}
+          generateReleaseNotes: true
+          prerelease: true
+          skipIfReleaseExists: true
