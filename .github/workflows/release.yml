@@ -31,48 +31,51 @@ jobs:
         with:
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
+      - name: Print output
+        run: echo "Commitizen output ${{ steps.cz.outputs }}"
+
       - name: Run image
-        if: env.REVISION
+        if: steps.cz.outputs.version
         uses: abatilo/actions-poetry@v2.3.0
         with:
           poetry-version: '1.5.1'
 
       - name: Install dependencies
-        if: env.REVISION
+        if: steps.cz.outputs.version
         run: |
           python -m pip install --upgrade pip
           pip install wheel twine
 
       - name: Update manifest.json version
-        if: env.REVISION
+        if: steps.cz.outputs.version
         uses: jossef/action-set-json-field@v2.1
         with:
           file: custom_components/uk_bin_collection/manifest.json
           field: version
-          value: ${{ env.REVISION }}
+          value: ${{ steps.cz.outputs.version }}
 
       - name: Update manifest.json requirements
-        if: env.REVISION
+        if: steps.cz.outputs.version
         uses: jossef/action-set-json-field@v2.1
         with:
           file: custom_components/uk_bin_collection/manifest.json
           field: requirements[0]
-          value: uk-bin-collection>=${{ env.REVISION }}
+          value: uk-bin-collection>=${{ steps.cz.outputs.version }}
 
       - name: Install
-        if: env.REVISION
+        if: steps.cz.outputs.version
         run: make install
 
       - name: Create release
-        if: env.REVISION
+        if: steps.cz.outputs.version
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ env.REVISION }}
+          tag: ${{ steps.cz.outputs.version }}
           generateReleaseNotes: true
           prerelease: true
 
       - name: Build and publish package
-        if: env.REVISION
+        if: steps.cz.outputs.version
         run: |
           poetry config pypi-token.pypi "${{ secrets.PYPI_API_KEY }}"
           poetry publish --build
