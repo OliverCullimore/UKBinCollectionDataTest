@@ -59,4 +59,7 @@ lxml = "*"
 major_version_zero = true
 version_provider = "poetry"
 version_scheme = "semver"
+version_files = [
+    "custom_components/uk_bin_collection/manifest.json:requirements"
+]
 
