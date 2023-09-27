@@ -27,6 +27,7 @@ jobs:
           python-version: '3.10'
 
       - name: Bump version
+        id: cz
         uses: commitizen-tools/commitizen-action@master
         with:
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
